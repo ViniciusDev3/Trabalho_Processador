@@ -48,7 +48,7 @@ string lerValorRegistrador(const string& registrador)
     while(getline(file, linha))
     {
         istringstream iss(linha);
-        getline(iss, reg, ';');
+        getline(iss, reg, ':');
         iss >> valor;
 
         if(reg == registrador)
@@ -60,12 +60,15 @@ string lerValorRegistrador(const string& registrador)
     return "";
 }
 
+int contPC = 0;
 void unicadeC(string instr, string valor1, string valor2, string valor3) 
 {
-    ofstream unicadeControle("unicade_controle.txt");
+
+    ofstream unicadeControle("unicade_controle.txt", ios::app);
     if (unicadeControle.is_open())
     {
-        unicadeControle << instr << " " <<  valor1 << " " <<  valor2 << " " <<  valor3;
+        unicadeControle << "PC: " << contPC << " | IR: " << instr << " " <<  valor1 << " " <<  valor2 << " " <<  valor3 << endl;
+        contPC++;
     } else {
         cout << "Erro ao abrir o arquivo de entrada" << endl;
     }
@@ -79,9 +82,8 @@ void executar(string instr, string valor1, string valor2, string valor3)
     if (instr == "LOAD")
     {
         registradores(valor1, valor2);
-        cout << "\nsucesso ao carregar\n\n";
+        cout << "LOAD" << endl;
     }
-
     if (instr == "STORE")
     {
         string valor = lerValorRegistrador(valor1);
@@ -114,7 +116,7 @@ void executar(string instr, string valor1, string valor2, string valor3)
             memoriaW << line << endl;
         }
 
-        cout << "\nsucesso ao armazenar\n\n" << endl;
+        cout << "STORE" << endl;
 
     }
     // if else (instr == "MOVE" )
@@ -134,7 +136,7 @@ void arqOpen() {
         {
             istringstream text(linha);
             string instr, valor1, valor2, valor3;
-            
+
             text >> instr >> valor1 >> valor2 >> valor3;
             unicadeC(instr, valor1, valor2, valor3);
             executar(instr, valor1, valor2, valor3);
@@ -154,7 +156,31 @@ int memoriaM()
 }
 */
 
+void iniciarReg()
+{
+    ofstream initR("banco_registradores.txt");
+    if (initR.is_open())
+    {
+        for (int i = 0; i <=3; i++)
+        {
+            initR << "R" << i << ": " << 0 << endl;
+
+        }
+    }
+    else
+    {
+        cout << "Erro ao abrir o arquivo!!!" << endl;
+    }
+    
+    initR.close();
+}
+
 int main ()
 {
+    iniciarReg();
+
+    ofstream arquivo("unicade_controle.txt");
+    arquivo.close();
+
     arqOpen();
 }
