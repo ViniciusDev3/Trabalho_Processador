@@ -6,37 +6,67 @@
 
 using namespace std;
 
-void registradores( string x, string y) 
+void registradores( string registrador, string M) 
 {
-    string m;
-    ofstream regist("banco_registradores.txt");
-    if (regist.is_open())
+    //Vai ler todos os dados do arquivo e colocar em um vetor
+    ifstream registV("banco_registradores.txt");
+    vector<string> linhas;
+    string linha;
+    if (registV.is_open())
     {
-        // Ta puxando da memoria ram o valor para registra nos registradores R0, R1, R2 e R3
-        ifstream memoriaR("memoria_ram.txt");
-        if (memoriaR.is_open())
+        while (getline(registV, linha))
         {
-            int cont = 0;
-            string linhaR;
-            while (getline(memoriaR, linhaR))
-            {
-                cont++;
-                if (cont == stoi(y))
-                {
-                    istringstream textR(linhaR);
-                    textR >> m;
-                }
-            }
-            regist << x << ": " << m;
-        } else {
-            cout << "Erro ao abrir o arquivo de entrada" << endl;
+            linhas.push_back(linha);
         }
+        registV.close();
+    } else {
+        cout << "Erro ao abrir o arquivo para leitura!!!" << endl;
+    }
+    
+    int i = 0;
+    ifstream memoriaR("memoria_ram.txt");
+    if (memoriaR.is_open())
+    {
+        for ( i; i < linhas.size(); i++)
+        {
+            string reg;
+            istringstream iss(linhas[i]);
+            getline(iss, reg, ':');
+
+            if (reg == registrador)
+            {
+                break;
+            }
+        }
+        
+        int cont = 0;
+        string linhaR, valorM;
+        while (getline(memoriaR, linhaR))
+        {
+            cont++;
+            if (cont == stoi(M))
+            {
+                istringstream textR(linhaR);
+                textR >> valorM;
+            }
+        }
+        linhas[i] = registrador + ": " + valorM;
         memoriaR.close();
     } else {
         cout << "Erro ao abrir o arquivo de entrada" << endl;
     }
-    regist.close();
-    
+
+    //Registra nos registradores R0, R1, R3, R4 nos novos valores
+    ofstream regist("banco_registradores.txt");
+    if (regist.is_open())
+    {
+        for (size_t i = 0; i < linhas.size(); i++)
+        {
+            regist << linhas[i] << endl;
+        }
+    } else {
+        cout << "Erro ao abrir o arquivo!!!" << endl;
+    }
 }
 
 string lerValorRegistrador(const string& registrador)

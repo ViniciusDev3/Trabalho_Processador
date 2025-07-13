@@ -1,0 +1,3 @@
+PC: 0 | IR: LOAD R1 13 
+PC: 1 | IR: LOAD R3 8 
+PC: 2 | IR: LOAD R1 9 
