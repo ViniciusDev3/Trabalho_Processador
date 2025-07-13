@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -38,6 +39,27 @@ void registradores( string x, string y)
     
 }
 
+string lerValorRegistrador(const string& registrador)
+{
+    ifstream file("banco_registradores.txt");
+    string linha;
+    string reg, valor;
+
+    while(getline(file, linha))
+    {
+        istringstream iss(linha);
+        getline(iss, reg, ';');
+        iss >> valor;
+
+        if(reg == registrador)
+        {
+            return valor;
+        }
+    }
+
+    return "";
+}
+
 void unicadeC(string instr, string valor1, string valor2, string valor3) 
 {
     ofstream unicadeControle("unicade_controle.txt");
@@ -57,18 +79,49 @@ void executar(string instr, string valor1, string valor2, string valor3)
     if (instr == "LOAD")
     {
         registradores(valor1, valor2);
-        cout << "foi";
+        cout << "\nsucesso ao carregar\n\n";
     }
-    /*
-    if else (instr == "STORE" )
+
+    if (instr == "STORE")
     {
+        string valor = lerValorRegistrador(valor1);
+        
+        ifstream memoriaR("memoria_ram.txt");
+        vector <string> linhas;
+        string linha;
+
+        while(getline(memoriaR, linha))
+        {
+            linhas.push_back(linha);
+        }
+
+        memoriaR.close();
+
+        int pos = stoi(valor2);
+        if(pos > 0 && pos <= (int)linhas.size())
+        {
+            linhas[pos - 1] = valor;
+        }
+        else if(pos > (int)linhas.size())
+        {
+            linhas.resize(pos, "");
+            linhas[pos - 1] = valor;
+        }
+
+        ofstream memoriaW("memoria_ram.txt");
+        for(const auto& line : linhas)
+        {
+            memoriaW << line << endl;
+        }
+
+        cout << "\nsucesso ao armazenar\n\n" << endl;
 
     }
-    if else (instr == "MOVE" )
-    {
+    // if else (instr == "MOVE" )
+    // {
 
-    }
-    */
+    // }
+    
 }
 
 void arqOpen() {
