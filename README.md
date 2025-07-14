@@ -68,7 +68,7 @@ R3: 0
 
 ### memoria_ram.txt
 
-Contém valores da RAM por linha. A posição na RAM é determinada pela linha (1-indexed).
+Representa a memória principal do sistema. Cada linha é uma posição de memória numerada implicitamente a partir de 1.
 
 ```
 10
