@@ -7,10 +7,7 @@
 
 using namespace std;
 
-void add(string destino, string origem1, string origem2);
-void sub(string destino, string origem1, string origem2);
-void orReg(string destino, string origem1, string origem2);
-void andReg(string destino, string origem1, string origem2);
+int clicoclock = 0;
 
 void moveRegis(string regist1, string regist2)
 {
@@ -150,154 +147,6 @@ string lerValorRegistrador(const string& registrador)
     }
 
     return "";
-}
-
-int contPC = 0;
-void unicadeC(string instr, string valor1, string valor2, string valor3) 
-{
-    ofstream unicadeControle("unicade_controle.txt", ios::app);
-    if (unicadeControle.is_open())
-    {
-        unicadeControle << "PC: " << contPC << " | IR: " << instr << " " <<  valor1 << " " <<  valor2 << " " <<  valor3 << endl;
-        contPC++;
-    } else {
-        cout << "Erro ao abrir o arquivo de entrada" << endl;
-    }
-    unicadeControle.close();
-    
-}
-
-void executar(string instr, string valor1, string valor2, string valor3)
-{
-    
-    if (instr == "LOAD")
-    {
-        registradores(valor1, valor2);
-        cout << "LOAD" << endl;
-    }
-    if (instr == "STORE")
-    {
-        string valor = lerValorRegistrador(valor1);
-        
-        ifstream memoriaR("memoria_ram.txt");
-        vector <string> linhas;
-        string linha;
-
-        while(getline(memoriaR, linha))
-        {
-            linhas.push_back(linha);
-        }
-
-        memoriaR.close();
-
-        int pos = stoi(valor2);
-        if(pos > 0 && pos <= (int)linhas.size())
-        {
-            linhas[pos - 1] = valor;
-        }
-        else if(pos > (int)linhas.size())
-        {
-            linhas.resize(pos, "");
-            linhas[pos - 1] = valor;
-        }
-
-        ofstream memoriaW("memoria_ram.txt");
-        for(const auto& line : linhas)
-        {
-            memoriaW << line << endl;
-        }
-
-        cout << "STORE" << endl;
-    }
-    if  (instr == "MOVE" )
-    {
-        moveRegis(valor1, valor2);
-        cout << "MOVE" << endl;
-    }
-    if (instr == "ADD")
-    {
-        add(valor1, valor2, valor3);
-    }
-    if (instr == "SUB")
-    {
-        sub(valor1, valor2, valor3);
-    }
-    if (instr == "OR")
-    {
-        orReg(valor1, valor2, valor3);
-    }
-        if (instr == "AND")
-    {
-        andReg(valor1, valor2, valor3);
-    }
-
-
-}
-
-void arqOpen() {
-    ifstream arqEntrada("entrada.txt");
-    vector<string> programa;
-    string linha;
-    if (arqEntrada.is_open())
-    {
-        while (getline(arqEntrada, linha))
-        {
-            programa.push_back(linha);
-        }
-        arqEntrada.close();
-    } else {
-        cout << "Erro ao abrir o arquivo para leitura!!!" << endl;
-    }
-
-    int PC = 0;
-    bool operando = true;
-    while ( operando && PC < (int)programa.size())
-    {
-        istringstream text(programa[PC]);
-        string instr = "", valor1, valor2, valor3;
-        text >> instr >> valor1 >> valor2 >> valor3;
-        
-        if (instr == "HALT")
-        {
-            unicadeC(instr, valor1, valor2, valor3);
-            operando = false;
-            cout << "HALT" << endl;
-            break;
-        }
-        if (instr == "BRANCH")
-        {   
-            contPC = stoi(valor1);
-            unicadeC(instr, valor1, valor2, valor3);
-            PC = stoi(valor1);
-            cout << "BRANCH" << endl;
-        } 
-        if (instr != "HALT" && instr != "BRANCH" && operando != false)
-        {
-            unicadeC(instr, valor1, valor2, valor3);
-            executar(instr, valor1, valor2, valor3);
-            PC++;
-        }
-    }
-}
-
-
-void iniciarReg()
-{
-    ofstream initR("banco_registradores.txt");
-    if (initR.is_open())
-    {
-        for (int i = 0; i <=3; i++)
-        {
-            initR << "R" << i << ": " << 0 << endl;
-
-        }
-    }
-    else
-    {
-        cout << "Erro ao abrir o arquivo!!!" << endl;
-    }
-    
-    initR.close();
 }
 
 void add(string destino, string origem1, string origem2)
@@ -472,7 +321,184 @@ void andReg(string destino, string origem1, string origem2)
     cout << "AND" << endl;    
 }
 
+void store(string registrador, string posMemoria)
+{
+    string valor = lerValorRegistrador(registrador);
+    
+    ifstream memoriaR("memoria_ram.txt");
+    vector<string> linhas;
+    string linha;
 
+    while (getline(memoriaR, linha))
+    {
+        linhas.push_back(linha);
+    }
+
+    memoriaR.close();
+
+    int pos = stoi(posMemoria);
+
+    if (pos > 0 && pos <= (int)linhas.size())
+    {
+        linhas[pos - 1] = valor;
+    }
+    else if (pos > (int)linhas.size())
+    {
+        linhas.resize(pos, "");
+        linhas[pos - 1] = valor;
+    }
+
+    ofstream memoriaW("memoria_ram.txt");
+    for (const auto& line : linhas)
+    {
+        memoriaW << line << endl;
+    }
+
+    cout << "STORE" << endl;
+}
+
+void nop()
+{
+    cout << "NOP" << endl;
+}
+
+int contPC = 0;
+void unicadeC(string instr, string valor1, string valor2, string valor3) 
+{
+    ofstream unicadeControle("unicade_controle.txt", ios::app);
+    if (unicadeControle.is_open())
+    {
+        unicadeControle << "CICLO: " << clicoclock 
+                        << " | PC: " << contPC 
+                        << " | IR: " << instr << " " << valor1 << " " << valor2 << " " << valor3 
+                        << endl;
+
+        contPC++;
+        clicoclock++;
+    } 
+    else 
+    {
+        cout << "Erro ao abrir o arquivo de entrada" << endl;
+    }
+
+    unicadeControle.close();
+}
+
+void executar(string instr, string valor1, string valor2, string valor3)
+{
+    
+    if (instr == "LOAD")
+    {
+        registradores(valor1, valor2);
+        cout << "LOAD" << endl;
+    }
+    if (instr == "STORE")
+    {
+        store(valor1, valor2);
+    }
+    if  (instr == "MOVE" )
+    {
+        moveRegis(valor1, valor2);
+        cout << "MOVE" << endl;
+    }
+    if(instr == "NOP")
+    {
+        nop();
+    }
+    if (instr == "ADD")
+    {
+        add(valor1, valor2, valor3);
+    }
+    if (instr == "SUB")
+    {
+        sub(valor1, valor2, valor3);
+    }
+    if (instr == "OR")
+    {
+        orReg(valor1, valor2, valor3);
+    }
+        if (instr == "AND")
+    {
+        andReg(valor1, valor2, valor3);
+    }
+
+}
+
+void arqOpen() {
+    ifstream arqEntrada("entrada.txt");
+    vector<string> programa;
+    string linha;
+    if (arqEntrada.is_open())
+    {
+        while (getline(arqEntrada, linha))
+        {
+            programa.push_back(linha);
+        }
+        arqEntrada.close();
+    } else {
+        cout << "Erro ao abrir o arquivo para leitura!!!" << endl;
+    }
+
+    int PC = 0;
+    bool operando = true;
+    while ( operando && PC < (int)programa.size())
+    {
+        istringstream text(programa[PC]);
+        string instr = "", valor1, valor2, valor3;
+        text >> instr >> valor1 >> valor2 >> valor3;
+        
+        if (instr == "HALT")
+        {
+            contPC++;  // ainda conta o PC
+            // NÃO incrementa clicoclock
+            ofstream unicadeControle("unicade_controle.txt", ios::app);
+             if (unicadeControle.is_open())
+            {
+                unicadeControle << "CICLO: " << clicoclock 
+                                << " | PC: " << contPC - 1
+                                << " | IR: " << instr << " " << valor1 << " " << valor2 << " " << valor3 
+                                << endl;
+            }
+            unicadeControle.close();
+
+            operando = false;
+            cout << "HALT" << endl;
+            break;
+        }
+        if (instr == "BRANCH")
+        {   
+            contPC = stoi(valor1);
+            unicadeC(instr, valor1, valor2, valor3);
+            PC = stoi(valor1);
+            cout << "BRANCH" << endl;
+        } 
+        if (instr != "HALT" && instr != "BRANCH" && operando != false)
+        {
+            unicadeC(instr, valor1, valor2, valor3);
+            executar(instr, valor1, valor2, valor3);
+            PC++;
+        }
+    }
+}
+
+void iniciarReg()
+{
+    ofstream initR("banco_registradores.txt");
+    if (initR.is_open())
+    {
+        for (int i = 0; i <=3; i++)
+        {
+            initR << "R" << i << ": " << 0 << endl;
+
+        }
+    }
+    else
+    {
+        cout << "Erro ao abrir o arquivo!!!" << endl;
+    }
+    
+    initR.close();
+}
 
 int main ()
 {

@@ -1,8 +1,6 @@
-PC: 0 | IR: LOAD R1 1 
-PC: 1 | IR: LOAD R2 2 
-PC: 2 | IR: ADD R0 R1 R2
-PC: 3 | IR: STORE R0 3 
-PC: 4 | IR: OR R0 R1 R2
-PC: 5 | IR: AND R0 R1 R2
-PC: 6 | IR: MOVE R3 R0 
-PC: 7 | IR: HALT   
+CICLO: 0 | PC: 0 | IR: LOAD R1 1 
+CICLO: 1 | PC: 1 | IR: LOAD R2 2 
+CICLO: 2 | PC: 2 | IR: ADD R3 R1 R2
+CICLO: 3 | PC: 3 | IR: STORE R3 3 
+CICLO: 4 | PC: 4 | IR: NOP   
+CICLO: 5 | PC: 5 | IR: HALT   
