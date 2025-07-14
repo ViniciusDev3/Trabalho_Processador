@@ -1,4 +1,5 @@
-PC: 0 | IR: LOAD R1 13 
-PC: 1 | IR: LOAD R3 9 
-PC: 6 | IR: BRANCH 6  
-PC: 7 | IR: HALT   
+PC: 0 | IR: LOAD R1 1 
+PC: 1 | IR: LOAD R2 2 
+PC: 2 | IR: SUB R0 R1 R2
+PC: 3 | IR: BZERO 6  
+PC: 4 | IR: HALT   
