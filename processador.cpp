@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -5,6 +6,11 @@
 #include <vector>
 
 using namespace std;
+
+void add(string destino, string origem1, string origem2);
+void sub(string destino, string origem1, string origem2);
+void orReg(string destino, string origem1, string origem2);
+void andReg(string destino, string origem1, string origem2);
 
 void moveRegis(string regist1, string regist2)
 {
@@ -207,7 +213,25 @@ void executar(string instr, string valor1, string valor2, string valor3)
     {
         moveRegis(valor1, valor2);
         cout << "MOVE" << endl;
-    }    
+    }
+    if (instr == "ADD")
+    {
+        add(valor1, valor2, valor3);
+    }
+    if (instr == "SUB")
+    {
+        sub(valor1, valor2, valor3);
+    }
+    if (instr == "OR")
+    {
+        orReg(valor1, valor2, valor3);
+    }
+        if (instr == "AND")
+    {
+        andReg(valor1, valor2, valor3);
+    }
+
+
 }
 
 void arqOpen() {
@@ -276,11 +300,185 @@ void iniciarReg()
     initR.close();
 }
 
+void add(string destino, string origem1, string origem2)
+{
+    string v1 = lerValorRegistrador(origem1);
+    string v2 = lerValorRegistrador(origem2);
+
+    int val1 = stoi(v1);
+    int val2 = stoi(v2);
+
+    int soma = val1 + val2;
+
+    ifstream registR("banco_registradores.txt");
+    vector <string> linhas;
+    string linha;
+
+    while(getline(registR, linha))
+    {
+        linhas.push_back(linha);
+    }
+
+    registR.close();
+
+    for(size_t i = 0; i < linhas.size(); i++)
+    {
+        istringstream iss(linhas[i]);
+        string reg;
+        getline(iss, reg, ':');
+
+        if (reg == destino) 
+        {
+            linhas[i] = destino + ": " + to_string(soma);
+        }
+    }
+
+    ofstream registW("banco_registradores.txt");
+    for (const auto& l : linhas) 
+    {
+        registW << l << endl;
+    }
+    registW.close();
+
+    cout << "ADD" << endl;    
+}
+
+void sub(string destino, string origem1, string origem2)
+{
+    string v1 = lerValorRegistrador(origem1);
+    string v2 = lerValorRegistrador(origem2);
+
+    int val1 = stoi(v1);
+    int val2 = stoi(v2);
+
+    int subtracao = val1 - val2;
+
+    ifstream registR("banco_registradores.txt");
+    vector <string> linhas;
+    string linha;
+
+    while(getline(registR, linha))
+    {
+        linhas.push_back(linha);
+    }
+
+    registR.close();
+
+    for(size_t i = 0; i < linhas.size(); i++)
+    {
+        istringstream iss(linhas[i]);
+        string reg;
+        getline(iss, reg, ':');
+
+        if (reg == destino) 
+        {
+            linhas[i] = destino + ": " + to_string(subtracao);
+        }
+    }
+
+    ofstream registW("banco_registradores.txt");
+    for (const auto& l : linhas) 
+    {
+        registW << l << endl;
+    }
+    registW.close();
+
+    cout << "SUB" << endl;    
+}
+
+void orReg(string destino, string origem1, string origem2)
+{
+    string v1 = lerValorRegistrador(origem1);
+    string v2 = lerValorRegistrador(origem2);
+
+    int val1 = stoi(v1);
+    int val2 = stoi(v2);
+
+    int resultado = val1 | val2;
+
+    ifstream registR("banco_registradores.txt");
+    vector <string> linhas;
+    string linha;
+
+    while(getline(registR, linha))
+    {
+        linhas.push_back(linha);
+    }
+
+    registR.close();
+
+    for(size_t i = 0; i < linhas.size(); i++)
+    {
+        istringstream iss(linhas[i]);
+        string reg;
+        getline(iss, reg, ':');
+
+        if (reg == destino) 
+        {
+            linhas[i] = destino + ": " + to_string(resultado);
+        }
+    }
+
+    ofstream registW("banco_registradores.txt");
+    for (const auto& l : linhas) 
+    {
+        registW << l << endl;
+    }
+    registW.close();
+
+    cout << "OR" << endl;    
+}
+
+void andReg(string destino, string origem1, string origem2)
+{
+    string v1 = lerValorRegistrador(origem1);
+    string v2 = lerValorRegistrador(origem2);
+
+    int val1 = stoi(v1);
+    int val2 = stoi(v2);
+
+    int resultado = val1 & val2;
+
+    ifstream registR("banco_registradores.txt");
+    vector <string> linhas;
+    string linha;
+
+    while(getline(registR, linha))
+    {
+        linhas.push_back(linha);
+    }
+
+    registR.close();
+
+    for(size_t i = 0; i < linhas.size(); i++)
+    {
+        istringstream iss(linhas[i]);
+        string reg;
+        getline(iss, reg, ':');
+
+        if (reg == destino) 
+        {
+            linhas[i] = destino + ": " + to_string(resultado);
+        }
+    }
+
+    ofstream registW("banco_registradores.txt");
+    for (const auto& l : linhas) 
+    {
+        registW << l << endl;
+    }
+    registW.close();
+
+    cout << "AND" << endl;    
+}
+
+
+
 int main ()
 {
     iniciarReg();
 
-    ofstream arquivo("unicade_controle.txt");
+    ofstream arquivo("unicade_controle.txt");   
     arquivo.close();
     
     arqOpen();
