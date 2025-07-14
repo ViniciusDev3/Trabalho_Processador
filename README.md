@@ -1,5 +1,4 @@
-# Simulador de Unidade de Controle
-
+# Simulador de um Processador
 Este programa em C++ simula a execução de instruções básicas de um processador simples, manipulando registradores e memória RAM a partir de arquivos de texto.
 
 ## Estrutura dos Arquivos
