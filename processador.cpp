@@ -326,6 +326,48 @@ void andReg(string destino, string origem1, string origem2)
     cout << "AND" << endl;    
 }
 
+void store(string registrador, string posMemoria)
+{
+    string valor = lerValorRegistrador(registrador);
+    
+    ifstream memoriaR("memoria_ram.txt");
+    vector<string> linhas;
+    string linha;
+
+    while (getline(memoriaR, linha))
+    {
+        linhas.push_back(linha);
+    }
+
+    memoriaR.close();
+
+    int pos = stoi(posMemoria);
+
+    if (pos > 0 && pos <= (int)linhas.size())
+    {
+        linhas[pos - 1] = valor;
+    }
+    else if (pos > (int)linhas.size())
+    {
+        linhas.resize(pos, "");
+        linhas[pos - 1] = valor;
+    }
+
+    ofstream memoriaW("memoria_ram.txt");
+    for (const auto& line : linhas)
+    {
+        memoriaW << line << endl;
+    }
+
+    cout << "STORE" << endl;
+}
+
+void nop()
+{
+    cout << "NOP" << endl;
+}
+
+
 void unicadeC(int PC, string instr, string valor1, string valor2, string valor3) 
 {
     ofstream unicadeControle("unicade_controle.txt", ios::app);
@@ -349,37 +391,11 @@ void executar(string instr, string valor1, string valor2, string valor3)
     }
     if (instr == "STORE")
     {
-        string valor = lerValorRegistrador(valor1);
-        
-        ifstream memoriaR("memoria_ram.txt");
-        vector <string> linhas;
-        string linha;
-
-        while(getline(memoriaR, linha))
-        {
-            linhas.push_back(linha);
-        }
-
-        memoriaR.close();
-
-        int pos = stoi(valor2);
-        if(pos > 0 && pos <= (int)linhas.size())
-        {
-            linhas[pos - 1] = valor;
-        }
-        else if(pos > (int)linhas.size())
-        {
-            linhas.resize(pos, "");
-            linhas[pos - 1] = valor;
-        }
-
-        ofstream memoriaW("memoria_ram.txt");
-        for(const auto& line : linhas)
-        {
-            memoriaW << line << endl;
-        }
-
-        cout << "STORE" << endl;
+        store(valor1, valor2);
+    }
+    if(instr == "NOP")
+    {
+        nop();
     }
     if  (instr == "MOVE" )
     {
@@ -436,14 +452,14 @@ void arqOpen() {
         }
         else if (instr == "BRANCH")
         {   
-            PC = stoi(valor1);
+            PC = stoi(valor1) - 1;
             cout << "BRANCH" << endl;
             continue;
         }
         else if (instr == "BNEG") 
         {
             if (ultimoValor < 0) {
-                PC = stoi(valor1);
+                PC = stoi(valor1) - 1;
                 cout << "BNEG" << endl;
                 continue;
             }
@@ -457,7 +473,7 @@ void arqOpen() {
         else if (instr == "BZERO") 
         {
             if (ultimoValor == 0) {
-                PC = stoi(valor1);
+                PC = stoi(valor1) - 1;
                 cout << "BZERO" << endl;
                 continue;
             }
