@@ -368,16 +368,16 @@ void nop()
 }
 
 
-void unicadeC(int PC, string instr, string valor1, string valor2, string valor3) 
+void unidadeC(int PC, string instr, string valor1, string valor2, string valor3) 
 {
-    ofstream unicadeControle("unicade_controle.txt", ios::app);
-    if (unicadeControle.is_open())
+    ofstream unidadeControle("unidade_controle.txt", ios::app);
+    if (unidadeControle.is_open())
     {
-        unicadeControle << "PC: " << PC << " | IR: " << instr << " " <<  valor1 << " " <<  valor2 << " " <<  valor3 << endl;
+        unidadeControle << "PC: " << PC << " | IR: " << instr << " " <<  valor1 << " " <<  valor2 << " " <<  valor3 << endl;
     } else {
         cout << "Erro ao abrir o arquivo de entrada" << endl;
     }
-    unicadeControle.close();
+    unidadeControle.close();
     
 }
 
@@ -443,7 +443,7 @@ void arqOpen() {
         istringstream text(programa[PC]);
         string instr , valor1, valor2, valor3;
         text >> instr >> valor1 >> valor2 >> valor3;
-        unicadeC(PC, instr, valor1, valor2, valor3);
+        unidadeC(PC, instr, valor1, valor2, valor3);
 
         if (instr == "HALT")
         {
@@ -515,7 +515,7 @@ int main ()
 {
     iniciarReg();
 
-    ofstream arquivo("unicade_controle.txt");
+    ofstream arquivo("unidade_controle.txt");
     arquivo.close();
     
     arqOpen();
